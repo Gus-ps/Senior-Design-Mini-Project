@@ -1,0 +1,6 @@
+horse.png: A chestnut horse with a white blaze on its face is galloping through a dusty, open field.
+house.png: A charming stone cottage with climbing ivy and a wooden door is nestled in a lush garden bathed in golden sunlight.
+mermaid-diagram.png: The image shows a flowchart outlining the workflow of a system that processes user-submitted reports and images, extracts attributes using a VLM, retrieves database records, and ranks candidate matches to return the likely results.
+microphone.png: The image shows a close-up shot of a microphone with a detailed metallic grill resting on a textured surface illuminated by warm, golden lighting.
+phone.png: A smartphone with a colorful screen turned on rests on a wooden surface in warm sunlight next to a window.
+plane.png: A large white passenger airplane flies high through a clear blue sky above a sea of fluffy white clouds, viewed from directly underneath.
