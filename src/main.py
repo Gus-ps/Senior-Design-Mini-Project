@@ -18,8 +18,9 @@ def upload_image(image_path: Path, bucket: str, demo: bool) -> str:
     if demo:
         return f"s3://{bucket}/{key}"
 
-    import boto3
+    import boto3 
 
+    
     s3 = boto3.client("s3",
                       aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
                         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
@@ -34,9 +35,12 @@ def ask_vlm(image_path: Path, demo: bool) -> str:
         return "Demo response: the VLM would describe the main subject here."
 
     api_key = os.environ["VLM_API_KEY"]
-    model = os.getenv("VLM_MODEL", "gemini-2.0-flash")
+    model = os.getenv("VLM_MODEL", "gemini-3.6-flash")
+    
+    
     client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
+
         model=model,
         contents=[
             "What is in this image? Answer in one sentence.",
@@ -50,6 +54,7 @@ def ask_vlm(image_path: Path, demo: bool) -> str:
 
 
 def save_result(database: sqlite3.Connection, filename: str, s3_uri: str, description: str) -> None:
+    
     database.execute(
         """
         CREATE TABLE IF NOT EXISTS image_results (
@@ -59,6 +64,7 @@ def save_result(database: sqlite3.Connection, filename: str, s3_uri: str, descri
         )
         """
     )
+
     database.execute(
         "INSERT OR REPLACE INTO image_results VALUES (?, ?, ?)",
         (filename, s3_uri, description),
@@ -67,6 +73,7 @@ def save_result(database: sqlite3.Connection, filename: str, s3_uri: str, descri
 
 
 def main() -> None:
+    
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--demo", action="store_true", help="Run without AWS credentials")
     args = parser.parse_args()
