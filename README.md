@@ -1,118 +1,84 @@
-# VLM, S3, and SQLite Mini Project
+# Image attribute pipeline
 
-This project demonstrates a simple image-processing pipeline using a **vision-language model (VLM)**:
+Read images, ask Gemini for descriptions and item attributes, upload the images
+to Amazon S3, and save the results in SQLite, JSON, and text.
 
-1. Read PNG images from `assets/`.
-2. Upload each image to an existing Amazon S3 bucket.
-3. Send each image to Google Gemini for a one-sentence description.
-4. Save the image filename, S3 URI, and description in SQLite and `results.txt`.
+## Setup
 
-Gemini is the VLM because it receives both text and image data. This project uses Gemini as an existing model; it does not train a model from scratch.
-
-## Project Structure
-
-```text
-assets/             PNG images processed by the program
-src/main.py         Main pipeline
-results.db          SQLite database created after a run
-results.txt         Text file containing descriptions
-requirements.txt    Python dependencies
-```
-
-## Requirements
-
-- Python 3.10 or newer
-- A Google Gemini API key
-- An AWS account and an S3 bucket
-- AWS credentials with permission to upload objects to that bucket
-
-The S3 bucket must already exist. The program creates the `vlm-demo/` object prefix automatically when it uploads images, but it does not create the bucket.
-
-## Installation
-
-From the project directory, install the dependencies:
+Python 3.10 or newer is required. From the project folder:
 
 ```powershell
-python -m pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-## Configuration
+Create `.env` in the project root using `.env.example` as a template. Configure
+a Gemini API key, an available image-capable model, an existing S3 bucket,
+the bucket's region, and AWS upload credentials. Temporary credentials also
+require `AWS_SESSION_TOKEN`. You can use a configured AWS profile instead.
 
-Create a file named `.env` in the project root. Use your own values:
-
-```env
-VLM_API_KEY=your-gemini-api-key
-VLM_MODEL=gemini-2.0-flash
-
-AWS_ACCESS_KEY_ID=your-aws-access-key
-AWS_SECRET_ACCESS_KEY=your-aws-secret-key
-S3_BUCKET=your-existing-bucket-name
-```
-
-The current code uses the `us-east-1` AWS region. If your bucket is in another region, update `region_name` in `src/main.py`.
-
-Never commit `.env` or publish API keys and AWS secret keys. If a credential is exposed, revoke it and create a replacement.
-
-## Run Without Cloud Services
-
-Use demo mode to test the local pipeline without AWS or Gemini:
+## Run
 
 ```powershell
-python src/main.py --demo
+.\.venv\Scripts\python.exe src/main.py
 ```
 
-This creates placeholder S3 URIs and placeholder VLM responses. It still writes the results to `results.db` and `results.txt`.
-
-## Run With AWS and Gemini
-
-After creating the S3 bucket and configuring `.env`, run:
+With the virtual environment already active, the command is simply:
 
 ```powershell
 python src/main.py
 ```
 
-Images are uploaded under keys like:
+The program prints progress for each image and saves the actual results to
+`outputs/cloud/`. Images without identifiable attributes use `null`; no
+placeholder descriptions or fixed demo fixtures are used.
 
-```text
-vlm-demo/horse.png
-```
-
-The corresponding S3 URI is stored in the database, for example:
-
-```text
-s3://your-existing-bucket-name/vlm-demo/horse.png
-```
-
-## View Database Results
-
-Open the database with SQLite:
+View the saved database:
 
 ```powershell
-sqlite3 results.db
+python src/main.py --view
 ```
 
-Then run:
+Use another input folder or output location:
 
-```sql
-.tables
-SELECT * FROM image_results;
-.quit
+```powershell
+python src/main.py --input-dir C:\path\to\images --output-dir outputs\custom
 ```
 
-The `image_results` table contains:
+## Results
 
-- `filename`: the PNG filename
-- `s3_uri`: the location of the uploaded image in S3
-- `description`: Gemini's response
+- `results.db`: filename, S3 URI, description, item type, color, brand,
+  distinctive features, run mode, and model.
+- `results.json`: successful records from the current run.
+- `results.txt`: readable descriptions and attributes from the current run.
+- `run_report.json`: success/failure counts and per-image errors.
 
-## Pipeline
+Supported inputs are PNG, JPEG, and WebP. The contents determine the MIME type,
+including JPEG data stored in files named `.png`. Folders are scanned without
+recursing into subfolders.
 
-```text
-PNG image
-   |
-   +--> Amazon S3 upload
-   |
-   +--> Gemini VLM description
-   |
-   +--> SQLite and results.txt
+The application validates Gemini's JSON with Pydantic, updates records by
+filename, and continues after an individual image fails. A batch with failures
+exits with code 1; configuration errors exit with code 2. JSON validity does not
+guarantee the model's descriptions are factually correct.
+
+SQLite migration preserves untouched old records. Processing the same filename
+updates that record and its S3 object, so use separate outputs/object naming
+when working with distinct datasets that reuse filenames. Text and JSON exports
+are replaced on each run; the database retains older unprocessed records.
+
+## Before comparison
+
+The unchanged teammate code remains in the sibling
+`Senior-Design-Mini-Project-baseline` folder. From its `cloud-results` directory:
+
+```powershell
+& C:\Users\abhig\Senior-Design-Mini-Project\.venv\Scripts\python.exe ..\src\main.py
+Get-Content results.txt
 ```
+
+The baseline produces sentence descriptions. The final application adds
+structured attributes, validation, correct MIME handling, stable exports, and
+visible progress/error reporting.
+
+The assignment write-up is `Abhigyan Assignment 5 responses.txt`.
