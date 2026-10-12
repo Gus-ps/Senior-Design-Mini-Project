@@ -1,0 +1,141 @@
+ABHIGYAN - ASSIGNMENT 5 RESPONSES
+Working write-up, October 11, 2026.
+
+ORIGINAL WORK AND REPRODUCTION
+The original program reads assets, uploads each image to S3, obtains a one-
+sentence Gemini description, and stores filename/S3 URI/description in SQLite
+and results.txt. Its offline demo uses placeholders.
+
+The first unchanged-code run failed with:
+ImportError: cannot import name 'genai' from 'google' (unknown location).
+Installing the original requirements.txt in .venv resolved this environment
+issue. Python 3.12.10 was used on Windows.
+
+The original offline run produced 11 database rows and 11 text lines. Later
+repeated runs retained 11 database rows but accumulated 33 text lines, confirming
+that the original text export appends while the database updates by filename.
+
+
+GOALS AND PLAN
+Teammate's next steps: None.
+Teammate learning resources: None supplied.
+
+Selected goal: extract validated item attributes and persist them alongside
+descriptions. This supports the extraction stage in the repository diagram.
+The planned budget was 2-4 hours; this is not a claim of personal time spent.
+
+Five steps:
+1. Run the original pipeline and document setup, errors, and output.
+2. Trace the S3/Gemini/SQLite flow and define the attribute schema.
+3. Implement extraction, response validation, and additive database changes.
+4. Check cloud behavior, repeat processing, image formats, and failure handling.
+5. Document the final application, record before/after evidence, and publish it.
+
+With no teammate-provided next steps, the code and diagram motivated this
+extension. Full report matching, backend integration, and training a new model
+are outside the selected scope. Supporting test/fixture/launcher files were
+removed at the user's request after development so the final demo presents
+only the actual application. Fixture scoring is not a final product feature.
+
+FINAL CONTRIBUTION
+- Structured description, item_type, color, brand, and distinctive_features.
+- Nullable unknown attributes and instructions to avoid guessing unreadable
+  brands or following text embedded in an image.
+- Gemini JSON-schema requests and strict local Pydantic validation.
+- Actual MIME detection: nine original .png-named files contain JPEG data.
+- PNG/JPEG/WebP inputs and configurable input/output directories.
+- Additive SQLite migration, cloud/model provenance, and updates by filename.
+- Current-run JSON/text export instead of duplicate appended text.
+- Per-image progress, error recovery, redacted credential values in errors,
+  and a batch success/failure summary.
+- Read-only database inspection using --view.
+
+LEARNING RESOURCES
+No teammate resources were provided, so their usefulness cannot be evaluated.
+The following primary resources were consulted during AI-assisted implementation:
+
+1. https://ai.google.dev/gemini-api/docs/generate-content/structured-output?hl=en
+   Useful for JSON schemas and extracting machine-readable attributes. Schema
+   validity does not prove factual accuracy, and SDK serialization required an
+   additional compatibility correction during real cloud testing.
+
+2. https://docs.python.org/3/library/sqlite3.html
+   Useful for parameterized writes, transactions, and record inspection.
+   Explicit connection closing was necessary to avoid Windows file-lock issues;
+   the transaction context manager alone does not close a connection.
+
+3. https://docs.aws.amazon.com/boto3/latest/guide/s3-uploading-files.html
+   Useful for local-file uploads, object keys, and ContentType metadata. The
+   documentation does not establish that a particular account's bucket or
+   credentials work; that required an actual cloud run.
+
+EVIDENCE AND VERIFIED RESULTS
+Before cleanup, 14 behavioral checks passed, including a regression check of
+the SDK-serialized JSON-schema request. 
+
+The first real extended batch failed all 11 images because Gemini rejected
+additional_properties in generation_config.response_schema. The initial mocks
+missed this API incompatibility. Switching to response_json_schema corrected it.
+
+A subsequent real cloud run succeeded for phone.png:
+- Model: gemini-3.5-flash-lite.
+- Attributes: smartphone, black, unknown brand (null).
+- Description: "A smartphone lies flat on a wooden desk surface near a window,
+  displaying an illuminated screen with application icons."
+- Gemini response, S3 upload, and cloud-mode SQLite save completed successfully.
+- Attempted: 1; succeeded: 1; failed: 0.
+- The retained real result is in outputs/cloud/.
+
+
+Development checks also verified additive migration, unchanged exports on
+repeat processing, corrupt-input recovery, rejected malformed responses,
+supported image formats, and read-only database viewing.
+
+Source: https://github.com/Gus-ps/Senior-Design-Mini-Project
+
+VIDEO DEMONSTRATION
+Show dependency installation, launch the original preserved source, and display
+its new descriptions. Then launch the final application, show per-image
+processing and attributes, and inspect the saved database. Add actual observed
+batch counts after the recording; do not present a development fixture as AI
+inference or display your .env credentials.
+
+From the main project with .venv active:
+  python -m pip install -r requirements.txt
+  python src/main.py
+  python src/main.py --view
+
+To launch the original, use baseline/cloud-results as the working directory:
+  & C:\Users\abhig\Senior-Design-Mini-Project\.venv\Scripts\python.exe ..\src\main.py
+  Get-Content results.txt
+
+REFLECTION ON THE ORIGINAL WORK
+The repository demonstrates a cloud-integration prototype. The offline behavior
+was reproducible after dependency installation. The complete Exercise 3
+submission was not supplied at the time of submission, so the teammate's personal level of mastery cannot
+be judged solely from these files.
+
+Identified issues included missing local dependencies, an OpenAI-compatible
+docstring despite Gemini usage, incorrect PNG MIME declarations, accumulated
+text output, a fixed AWS region, absent structured attributes, and termination
+of the original batch on an individual processing exception.
+
+PERSONAL REFLECTION - REVIEW AND PERSONALIZE
+I really enjoyed learning more about AWS and Buckets, an area I have always wanted to explore, and I am glad I got the experience.
+Remaining gaps include broader extraction quality, quota/failure behavior across a full batch, candidate-ranking logic, and backend
+integration. A well-formed response can still contain wrong attributes.
+
+Three concrete project next steps:
+1. Run and inspect a complete real-cloud batch, confirming each image's S3
+   object and SQLite row while recording quota and extraction failures.
+2. Independently label at least 20 project-relevant item images, including
+   visually similar objects, then measure field agreement and review mistakes.
+3. Use the stored attributes to rank candidate reports and connect that
+   prototype to the report-submission backend shown in the project diagram.
+
+GENAI USAGE STATEMENT
+I used Codex to review the repository, plan the extension, help me understand as well as navigate this code, 
+and draft this write-up. Codex authored development tests that were later removed during cleanup.
+My screen recordings, resource review, and personal reflection are all done by me. 
+
+
