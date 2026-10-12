@@ -81,4 +81,3 @@ The baseline produces sentence descriptions. The final application adds
 structured attributes, validation, correct MIME handling, stable exports, and
 visible progress/error reporting.
 
-The assignment write-up is `Abhigyan Assignment 5 responses.txt`.

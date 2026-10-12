@@ -1,17 +1,5 @@
 ABHIGYAN - ASSIGNMENT 5 RESPONSES
 Working write-up, October 11, 2026.
-Review the personal learning sections and add your own screenshots/video links
-before submission. This document describes the final streamlined application.
-
-PROJECT AND ACCESS
-Repository: https://github.com/Gus-ps/Senior-Design-Mini-Project
-Baseline: master, commit 4a3563f.
-Contribution branch: assignment-5-attributes; local changes are not committed.
-Selected skill: integrating image-based VLM inference, S3, and SQLite in Python.
-The diagram connects item-attribute extraction to candidate-report matching.
-Confirm the assigned teammate using the assignment JSON, which was not supplied.
-GitHub rejected a dry-run push for abhigyan1290. Contributor access and a Git
-author name/email are still needed to publish the contribution to this repo.
 
 ORIGINAL WORK AND REPRODUCTION
 The original program reads assets, uploads each image to S3, obtains a one-
@@ -27,14 +15,6 @@ The original offline run produced 11 database rows and 11 text lines. Later
 repeated runs retained 11 database rows but accumulated 33 text lines, confirming
 that the original text export appends while the database updates by filename.
 
-The user later launched the original code with real cloud configuration. An
-inspection during execution found four saved real descriptions. A subsequent
-read-only database inspection confirmed 11 saved original-cloud records.
-
-[ADD your original-result screenshot showing the 11-record completion.]
-Suggested caption, use only with a matching capture:
-"Reproduction of the teammate's pipeline on my Windows machine, showing image
-descriptions saved after launching the unchanged source code."
 
 GOALS AND PLAN
 Teammate's next steps: None.
