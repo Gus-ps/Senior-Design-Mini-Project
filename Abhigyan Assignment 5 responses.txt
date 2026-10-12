@@ -1,5 +1,5 @@
+(This is copied from the txt file inside the github repo, this document is not formatted for google docs)
 ABHIGYAN - ASSIGNMENT 5 RESPONSES
-Working write-up, October 11, 2026.
 
 ORIGINAL WORK AND REPRODUCTION
 The original program reads assets, uploads each image to S3, obtains a one-
@@ -15,14 +15,20 @@ The original offline run produced 11 database rows and 11 text lines. Later
 repeated runs retained 11 database rows but accumulated 33 text lines, confirming
 that the original text export appends while the database updates by filename.
 
+An inspection during execution found four saved real descriptions. A subsequent
+read-only database inspection confirmed 11 saved original-cloud records. 
+
+Reproduction of the teammate's pipeline on my Windows machine, showing image
+descriptions saved after launching the unchanged source code.
+
 
 GOALS AND PLAN
 Teammate's next steps: None.
 Teammate learning resources: None supplied.
 
 Selected goal: extract validated item attributes and persist them alongside
-descriptions. This supports the extraction stage in the repository diagram.
-The planned budget was 2-4 hours; this is not a claim of personal time spent.
+descriptions. This was the next step I wanted to work on for our project's image-processing pipeline. 
+
 
 Five steps:
 1. Run the original pipeline and document setup, errors, and output.
@@ -31,11 +37,7 @@ Five steps:
 4. Check cloud behavior, repeat processing, image formats, and failure handling.
 5. Document the final application, record before/after evidence, and publish it.
 
-With no teammate-provided next steps, the code and diagram motivated this
-extension. Full report matching, backend integration, and training a new model
-are outside the selected scope. Supporting test/fixture/launcher files were
-removed at the user's request after development so the final demo presents
-only the actual application. Fixture scoring is not a final product feature.
+Since my teammate hadn't listed any next steps, I looked through the code and project diagram to figure out what I could improve. Full report matching, backend integration, and training a new model are outside the selected scope. 
 
 FINAL CONTRIBUTION
 - Structured description, item_type, color, brand, and distinctive_features.
@@ -111,9 +113,7 @@ To launch the original, use baseline/cloud-results as the working directory:
 
 REFLECTION ON THE ORIGINAL WORK
 The repository demonstrates a cloud-integration prototype. The offline behavior
-was reproducible after dependency installation. The complete Exercise 3
-submission was not supplied at the time of submission, so the teammate's personal level of mastery cannot
-be judged solely from these files.
+was reproducible after dependency installation. I only had access to my teammate's code, not their full Exercise 3 submission, so I couldn't really tell how comfortable they were with all the concepts.
 
 Identified issues included missing local dependencies, an OpenAI-compatible
 docstring despite Gemini usage, incorrect PNG MIME declarations, accumulated
@@ -122,8 +122,7 @@ of the original batch on an individual processing exception.
 
 PERSONAL REFLECTION - REVIEW AND PERSONALIZE
 I really enjoyed learning more about AWS and Buckets, an area I have always wanted to explore, and I am glad I got the experience.
-Remaining gaps include broader extraction quality, quota/failure behavior across a full batch, candidate-ranking logic, and backend
-integration. A well-formed response can still contain wrong attributes.
+Remaining gaps include broader extraction quality, quota/failure behavior across a full batch, candidate-ranking logic, and backend integration. One thing I learned is that even when Gemini returns properly formatted JSON, the actual information isn't necessarily correct 
 
 Three concrete project next steps:
 1. Run and inspect a complete real-cloud batch, confirming each image's S3
@@ -134,8 +133,7 @@ Three concrete project next steps:
    prototype to the report-submission backend shown in the project diagram.
 
 GENAI USAGE STATEMENT
-I used Codex to review the repository, plan the extension, help me understand as well as navigate this code, 
-and draft this write-up. Codex authored development tests that were later removed during cleanup.
-My screen recordings, resource review, and personal reflection are all done by me. 
+I used Codex to review the repository, plan the extension, help me understand as well as navigate this code,  and draft this write-up. Codex authored development tests that were later removed during cleanup. My screen recordings, resource review, and personal reflection are all done by me. 
+
 
 
