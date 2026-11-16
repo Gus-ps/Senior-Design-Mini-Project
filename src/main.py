@@ -40,7 +40,25 @@ def inspect_image(path: Path) -> str:
         if mime_type not in {"image/png", "image/jpeg", "image/webp"}:
             raise ValueError("Only PNG, JPEG, and WebP image contents are supported")
         image.verify()
+    with Image.open(path) as image:
+        image.load()
     return mime_type
+
+
+def check_inputs(images: list[Path]) -> int:
+    """Validate local images and report counts without creating outputs."""
+    invalid = 0
+    for path in images:
+        try:
+            inspect_image(path)
+        except (OSError, ValueError, SyntaxError, Image.DecompressionBombError) as exc:
+            invalid += 1
+            detail = str(exc).splitlines()[0] if str(exc) else type(exc).__name__
+            print(f"INVALID {path.name}: {type(exc).__name__}: {detail}", flush=True)
+    print(f"Checked {len(images)} images: {len(images) - invalid} valid, {invalid} invalid.")
+    if not images:
+        raise ValueError("No PNG, JPEG, or WebP images found in the input directory")
+    return 1 if invalid else 0
 
 
 def ask_vlm(path: Path, mime_type: str, client, model: str) -> ItemAttributes:
@@ -141,6 +159,8 @@ def run(args) -> int:
         raise ValueError(f"Input directory does not exist: {args.input_dir}")
     images = sorted(path for path in args.input_dir.iterdir()
                     if path.is_file() and path.suffix.lower() in SUPPORTED)
+    if args.check_inputs:
+        return check_inputs(images)
     if not images:
         raise ValueError(f"No PNG, JPEG, or WebP images found in {args.input_dir}")
     if not os.getenv("VLM_API_KEY") or not args.model or not args.bucket:
@@ -191,7 +211,10 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-dir", type=Path, default=ROOT / "assets")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "cloud")
-    parser.add_argument("--view", action="store_true", help="Print saved database records without processing images")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--view", action="store_true", help="Print saved database records without processing images")
+    modes.add_argument("--check-inputs", action="store_true",
+                       help="Validate local images and print valid/invalid counts without cloud access")
     parser.add_argument("--model", default=os.getenv("VLM_MODEL"))
     parser.add_argument("--bucket", default=os.getenv("S3_BUCKET"))
     parser.add_argument("--region", default=os.getenv("AWS_DEFAULT_REGION", "us-east-1"))

@@ -12,8 +12,8 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-Create `.env` in the project root using `.env.example` as a template. Configure
-a Gemini API key, an available image-capable model, an existing S3 bucket,
+For cloud processing, create `.env` in the project root using `.env.example`
+as a template. Configure a Gemini API key, an available image-capable model, an existing S3 bucket,
 the bucket's region, and AWS upload credentials. Temporary credentials also
 require `AWS_SESSION_TOKEN`. You can use a configured AWS profile instead.
 
@@ -44,6 +44,47 @@ Use another input folder or output location:
 ```powershell
 python src/main.py --input-dir C:\path\to\images --output-dir outputs\custom
 ```
+
+## Check inputs locally
+
+After installing the dependencies, validate the images in `assets/` with
+
+```powershell
+.\.venv\Scripts\python.exe src/main.py --check-inputs
+```
+
+Choose another folder with
+
+```powershell
+.\.venv\Scripts\python.exe src/main.py --check-inputs --input-dir C:\path\to\images
+```
+
+This command works without a `.env` file or API credentials. It performs local
+Pillow integrity and pixel-decoding checks, reports each invalid filename, and
+prints the number of valid and invalid images. It makes no Gemini or AWS
+requests and creates no database, exports, or output directory.
+
+The scan includes `.png`, `.jpg`, `.jpeg`, and `.webp` filenames, regardless of
+extension case, in the selected folder only. Image contents determine the
+format, so JPEG data stored under a `.png` filename is accepted. Unsupported
+extensions and subfolders are skipped. Validation continues after an image
+fails.
+
+The exit code is `0` when all images pass, `1` when any image fails, and `2` for
+a missing or unreadable input directory or a folder containing no supported
+files. An empty scan reports zero valid and zero invalid images. Use
+`--check-inputs` and `--view` separately.
+
+## Tests
+
+Run the automated tests from the project folder with
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+The tests generate temporary image fixtures and use mocks for cloud services.
+They require no credentials or cloud requests.
 
 ## Results
 
